@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>鼠标悬停DEMO</title>
+</head>
+<body>
+	<a href="http://advanceddomscripting.com" class="multiStateAnchor">
+		<img src="images/button1.png" width="110" height="67" alt="button">
+	</a>
+	
+	<a href="http://advanceddomscripting.com" class="multiStateAnchor">
+		<img src="images/button2.png" width="110" height="67" alt="button">	
+	</a>
+</body>
+<script src="js/myADS.JS"></script>
+<script>
+
+	function registerMultiStateAnchorListeners (anchor,anchorImage,path,extension) {
+		// 载入鼠标悬停状态的图像
+		// 载入过程与其余的脚本
+		// 异步进行
+		var imageMouseOver = new Image()
+		imageMouseOver.src = path + '-over' + extension;
+
+		// 当鼠标悬停时变换图像的源文件
+		myADS.addEvent(anchor,'mouseover',function(W3CEvent){
+			anchorImage.src = imageMouseOver.src;
+		});
+
+		// 当鼠标移出时将图像变换为原始文件
+		myADS.addEvent(anchor,'mouseout',function(W3CEvent){
+			anchorImage.src = path + extension;
+		});
+
+		var imageMouseDown = new Image()
+		imageMouseDown.src = path + '-down' + extension;
+		//当鼠标按下时将图像变换为按下状态的源文件
+		myADS.addEvent(anchor,'mousedown',function(W3CEvent){
+			anchorImage.src = imageMouseDown.src;
+		});
+
+		// 当鼠标放下时将图像变换为原始文件
+		myADS.addEvent(anchor,'mouseup',function(W3CEvent){
+			anchorImage.src = path + extension;
+		});
+	}
+
+	function initMultiStateAnchors (W3CEvent) {
+		// 查询页面中所有的锚
+		var anchors = myADS.getElementsByClassName('multiStateAnchor','a',document);
+
+		// 遍历所有的锚元素
+		for (var i = 0; i < anchors.length; i++) {
+			// 第一个图像元素
+			var anchorImage = anchors[i].getElementsByTagName('img')[0];
+
+			if (anchorImage) {
+				// 如果图像存在，解析其原路径
+				var extensionIndex = anchorImage.src.lastIndexOf('.');
+				var path = anchorImage.src.substr(0,extensionIndex);
+				var extension = anchorImage.src.substring(extensionIndex,anchorImage.src.length);
+				
+				// 添加各种鼠标处理程序
+				// 同时预先加载图像
+				registerMultiStateAnchorListeners(anchors[i],anchorImage,path,extension);
+			};
+		};
+	}
+	myADS.addEvent(window,'load',initMultiStateAnchors);
+
+</script>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Related Elements Example</title>
+	<style>
+		#div_id{
+			background: red;
+			height: 100px;
+			width: 100px;
+		}
+	</style>
+</head>
+<body>
+	<div id="div_id">
+	</div>
+</body>
+<script>
+	window.onload = function() {
+		// EventUtil----事件处理格式化
+		var EventUtil = new Object;
+		//添加/删除事件处理函数
+		EventUtil.addEventHandler = function (oTarget, sEventType, fnHandler) {
+		    if (oTarget.addEventListener) {
+		        oTarget.addEventListener(sEventType, fnHandler, false);
+		    }else if (oTarget.attachEvent) {
+		        oTarget.attachEvent("on" + sEventType, fnHandler);
+		    }else{
+		        oTarget["on" + sEventType] = fnHandler;
+		    };
+		}
+		EventUtil.removeEventHandler = function (oTarget, sEventType, fnHandler) {
+		    if (oTarget.removeEventListener) {
+		        oTarget.removeEventListener(sEventType, fnHandler, false);
+		    }else if (oTarget.detachEvent) {
+		        oTarget.detachEvent("on" + sEventType, fnHandler);
+		    }else{
+		        oTarget["on" + sEventType] = null;
+		    };
+		}
+
+		//检测是否IE
+		var sUserAgent = navigator.userAgent;
+		var isOpera = sUserAgent.indexOf("Opera") > -1;
+		var isIE = sUserAgent.indexOf("compatible") > -1 && sUserAgent.indexOf("MSIE") > -1 && !isOpera;
+		//格式化Event对象
+		EventUtil.formatEvent = function (oEvent) {
+		    if (isIE) {
+		        oEvent.charCode = (oEvent.type == "keypress") ? oEvent.keyCode : 0;
+		        oEvent.eventPhase = 2;
+		        oEvent.isChar = (oEvent.charCode > 0);
+		        oEvent.pageX = oEvent.clientX + document.body.scrollLeft;
+		        oEvent.pageY = oEvent.clientY + document.body.scrollTop;
+		        oEvent.preventDefault = function () {
+		            this.returnValue = false;
+		        }
+		        if (oEvent.type == "mouseout") {
+		            oEvent.relatedTarget = oEvent.toElement;
+		        }else if (oEvent.type == "mouseover") {
+		            oEvent.relatedTarget = oEvent.fromElement;
+		        };
+		        oEvent.stopPropagation = function () {
+		            this.cancelBubble = true;
+		        }
+		        oEvent.target = oEvent.srcElement;
+		        oEvent.time = (new Date()).getTime();
+		    };
+		    return oEvent;
+		}
+		                
+		//获取事件对象
+		EventUtil.getEvent = function () {
+		    if (window.event) {
+		        return this.formatEvent(window.event);
+		    }else{
+		        return EventUtil.getEvent.caller.arguments[0];
+		    }
+		}
+
+		EventUtil.getRelatedTarget = function  (event) {
+			// body...
+			if(event.relatedTarget){
+				return event.relatedTarget;
+			} else if (event.toElement){
+				return event.toElement;
+			} else if (event.formElement){
+				return event.formElement;
+			} else {
+				return null;
+			}
+		}
+
+		EventUtil.getTarget = function (event) {
+			// body...
+			if (event.target) {
+				return event.getTarget;
+			}else {
+				return null;
+			}
+		}
+		//DOM 鼠标事件
+		EventUtil.getButton = function (event) {
+			// body...
+			if (document.implementation.hasFeature("MouseEvents","2.0")) {
+				return event.button;
+			}else {
+				switch(event.button){
+					case 0:
+						
+					case 1:
+
+					case 3:
+
+					case 5:					
+
+					case 7:
+						return 0;
+						break;
+					case 2:
+
+					case 6:
+						return 2;
+						break;
+					case 4:
+						return 1;
+						break;
+
+				}
+			}
+		}
+
+		function $(name) {
+			return document.getElementById(name);
+		}
+		$("div_id").style.border = "1px solid yellow";
+
+		//鼠标悬浮事件
+		EventUtil.addEventHandler($("div_id"),'mousewheel',function (event) {
+			// body...
+			event = EventUtil.getEvent(event);
+			console.log(event.wheelDelta);
+		})
+
+		// 鼠标点击《左、中、右键》
+		EventUtil.addEventHandler($("div_id"),'mousedown',function () {
+			// body...
+			event = EventUtil.getEvent(event);
+			console.log(EventUtil.getButton(event));
+		});
+
+		// EventUtil.addEventHandler($("div_id"), 'click', function(event) {
+		// 	// body...
+		// 	event = EventUtil.getEvent(event);
+		// 	console.log(event.pageX + "    " + event.pageY);
+
+		// 	var keys = new Array();
+		// 	if (event.shiftkey) {
+		// 		keys.push('shift');
+		// 	}
+
+		// 	if (event.ctrlKey) {
+		// 		keys.push('ctrl');
+		// 	}
+
+		// 	if (event.altKey) {
+		// 		keys.push('alt');	
+		// 	}
+
+		// 	if (event.metaKey) {
+		// 		key.push('meta');
+		// 	}
+
+		// 	keys.join(',');
+		// 	console.log('key:'+keys.join(','));
+
+		// });
+
+		// EventUtil.addEventHandler($("div_id"),'mouseout',function (event) {
+		// 	// body...
+		// 	event = EventUtil.getEvent(event);
+		// 	var target = EventUtil.getTarget(event);
+		// 	var relatedTarget = EventUtil.getRelatedTarget(event);
+		// 	alert("Moused out of "+ target.tagName + "to " + relatedTarget.tagName);
+		// })
+
+	}
+</script>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>如果外部作用域 ['click','load','mouseout','mouseover'......侦听器] 变成了函数，那么这些函数在内部作用域调用下（for,循环），都能为它实例一个可维护的唯一的值（方法）</title>
+</head>
+<body>
+	<h1 class="findme">ADS.getElementsByClassName() Example</h1>
+	<p class="findme">This is just an <em class="a">example</em>.</p>
+	<div id="theList" style="display:none;">
+		<h2 class="findme">A list 1</h2>
+		<ol>
+			<li class="findme">Foo 1</li>
+			<li class="findme">Bar 1</li>
+		</ol>
+	</div>
+	<div id="theList1">
+		<h2 class="findme">A list 2</h2>
+		<ol>
+			<li class="findme">Foo 2</li>
+			<li class="findme">Bar 2</li>
+		</ol>
+	</div>
+	<h1 id="messagebox" href="wwww.baidu.com">This is just an example.</h1>
+
+	<a href="javascript:void(0);" id="click_ed">_myFunction 和 _myFunction（）</a>
+	<h3 style="color:orangered;">_myFunction 和 _myFunction() 的区别，前者作为是赋值给变量的函数，而非结果。后者会执行结果，而不是_myFunction（）函数本身赋值的某ID的click 事件侦听器</h3>
+	<br/>
+	<br/>
+	<a href="javascript:void(0);" id="anchor0">anchor0</a>
+	<a href="javascript:void(0);" id="anchor1">anchor1</a>
+	<a href="javascript:void(0);" id="anchor2">anchor2</a>
+	<a href="javascript:void(0);" id="anchor3">anchor3</a>
+	<h3>anchor 点击的时候结果全是 'anchor4' 因为当anchor_1 执行的时候 i 已经循环结束了，导致结果全是 ‘anchor4’</h3>
+	<br />
+	<a href="javascript:void(0);" id="anchor_0">anchor_0</a>
+	<a href="javascript:void(0);" id="anchor_1">anchor_1</a>
+	<a href="javascript:void(0);" id="anchor_2">anchor_2</a>
+	<a href="javascript:void(0);" id="anchor_3">anchor_3</a>
+	<h3>因为click 侦听器 现在的外部作用域变成了 registerListener() 函数， 该函数为在其每个实例的内部作用域都为 i 维护了一个唯一的值</h3>
+	<h2 style="text-shadow: 2px 1px #999;">小结：</h2>
+	<h3 style="color:orangered;">如果外部作用域 ['click','load','mouseout','mouseover'......侦听器] 变成了函数，那么这些函数在内部作用域调用下（for,循环），都能为它实例一个可维护的唯一的值（方法）</h3>
+</body>
+<script src="js/myADS.js"></script>
+<script src="js/ADS.js"></script>
+<script type="text/javascript">
+	// var found = myADS.getElementsByClassName('findme','*',document);
+	// var found1 = myADS.getElementsByClassName('findme','li',myADS.$("theList"));
+	myADS.toggleDisplay(myADS.$('theList'),'inline');
+
+	myADS.addEvent(window,'load',alert_('我是追加进来的！'));
+	function alert_ (message) {
+		myADS.$('messagebox').appendChild(document.createTextNode(message));
+	}
+	//////////////////////////////////////////////////////////////////////////////////
+	//
+	//
+	//
+	// 绑定click 事件
+	function show_alert(){
+		alert('Lick to:'+this.href);
+	}
+	var anchor = myADS.$('click_ed');
+	myADS.addEvent(anchor,'click',show_alert());
+	// 结果：直接运行出 show_alert() 函数的执行结果,不会将函数本身赋值给anchor 的 click 事件侦听器
+	// 
+	// 
+	// 
+	// 绑定click 事件
+	var anchor = myADS.$('click_ed');
+	myADS.addEvent(anchor,'click',show_alert);
+	// 作为变量，需要时 触发click 的侦听器
+	// 
+	// 
+	// 
+	// 
+	// 作用域是指对某一属性（变量） 或方法（函数） 具有访问权限的代码空间。
+	// javascript 作用域是在函数中进行维护
+	function myFunction () {
+		myVarible = 'inside';
+	}
+	// 定义变量
+	var myVarible = 'outside';
+	// 执行函数
+	myFunction ();
+	console.log(myVarible);
+	// 作用域链是用来描述一种路径的术语，沿着改路径可以确定变量的值。
+	// 
+	// 
+	// 
+	// 
+	// 闭包是与作用域相关的一个概念，它指的是内部函数及时在外部函数执行完成并终止以后然后可以访问其外部函数的属性。
+	function initAnchors_1(W3CEvent){
+		for (var i = 0; i < 4; i++) {
+			var anchor_1 = document.getElementById('anchor'+i);
+			myADS.addEvent(anchor_1,'click',function(){
+				alert('My id is anchor'+i);
+			});
+		}
+	};
+	myADS.addEvent(window,'load',initAnchors_1);
+	// anchor_1 点击的时候结果全是 'anchor4' 因为当anchor_1 执行的时候 i 已经循环结束了，导致结果全是 ‘anchor4’
+	// 
+	// 
+	// 
+	// 
+	function registerListener (anchor,i) {
+		myADS.addEvent(anchor,'click',function(){
+			alert('My id is anchor'+i);
+		});
+	}
+	function initAnchors_2(W3CEvent){
+		for (var i = 0; i < 4; i++) {
+			var anchor_2 = document.getElementById('anchor_'+i);
+			registerListener(anchor_2,i);
+		};
+	}
+	myADS.addEvent(window,'load',initAnchors_2);
+	// 因为click 侦听器 现在的外部作用域变成了 registerListener() 函数， 该函数为在其每个实例的内部作用域都为 i 维护了一个唯一的值
+	// 
+	// 
+	// 
+	// 小结:
+	// 如果外部作用域 ['click','load','mouseout','mouseover'......侦听器] 变成了函数，那么这些函数在内部作用域调用下（for,循环），都能为它实例一个可维护的唯一的值（方法）
+</script>
+</html>
