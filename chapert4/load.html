@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<script src="../js/ADS.js"></script>
+	<script src="../js/myLogger.js"></script>
+	<script src="load.js"></script>
+</head>
+<body>
+	<div id="content">
+	    <p>The page has 2 load events. One useing ADS.addEvent() and the other
+	    using ADS.addLoadEvent(). The latter will run before the large image
+	    finishes loading.</p>
+		<h2>A large inline image from the NASA web site</h2>
+		<div>
+			<img id="inline-image" 
+				src="http://imgsrc.baidu.com/forum/w%3D580/sign=3e831e5b19d5ad6eaaf964e2b1ca39a3/80cc3901213fb80e9774444834d12f2eb83894a9.jpg"/>
+		</div>
+	</div>
+</body>
+</html>

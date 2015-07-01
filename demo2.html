@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link rel="stylesheet" href="css/demo.css">
+	<script src="js/ADS.js"></script>
+	<script src="js/myLogger.js"></script>
+	<script src="js/test.js"></script>
+</head>
+<body>
+	<h2 class="text">try{} 、 catch{} 和 异常</h2>
+	<h2 class="text">javascript 日志对象：</h2>
+	<h2 class="text color">使用日志调试窗口，可以通过滚动条来查看日志列表，再也不必强制退出了。</h2>
+
+</body>
+<script>
+	var round = 'Roar!';
+	function myOrneryBeast () {
+		this.style.color = 'green';	
+		alert(round);
+	};
+	try{
+		myOrneryBeast();
+	}catch(e){
+		alert(e);
+	}
+</script>
+</html>

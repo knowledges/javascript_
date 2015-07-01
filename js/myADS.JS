@@ -1,7 +1,15 @@
 (function(){
 
 	if (!window['myADS']){window['myADS']={};}
-	
+
+	/**
+	 * Retrieves the event object in a cross-browser way.
+	 */
+	function getEventObject(W3CEvent) {
+	    return W3CEvent || window.event;
+	}
+	window['ADS']['getEventObject'] = getEventObject;
+
 	// 检查是否当前的浏览器兼容与整个库
 	function isCompatible (other) {
 		if (other === false 
@@ -154,5 +162,154 @@
 		return parent;
 	}
 	window['myADS']['prependChild']=prependChild;
+
+	/********************************
+	* Chapter 3
+	*********************************/
+
+	/**
+	 * Constants for note type comparison
+	 */
+	window['ADS']['node'] = {
+	    ELEMENT_NODE                : 1,
+	    ATTRIBUTE_NODE              : 2,
+	    TEXT_NODE                   : 3,
+	    CDATA_SECTION_NODE          : 4,
+	    ENTITY_REFERENCE_NODE       : 5,
+	    ENTITY_NODE                 : 6,
+	    PROCESSING_INSTRUCTION_NODE : 7,
+	    COMMENT_NODE                : 8,
+	    DOCUMENT_NODE               : 9,
+	    DOCUMENT_TYPE_NODE          : 10,
+	    DOCUMENT_FRAGMENT_NODE      : 11,
+	    NOTATION_NODE               : 12
+	};
+
+	/**
+	 * Walk the nodes in the DOM tree without maintaining parent/child relationships.
+	 */
+	function walkElementsLinear(func,node) {
+	    var root = node || window.document;
+	    var nodes = root.getElementsByTagName("*");
+	    for(var i = 0 ; i < nodes.length ; i++) {
+	        func.call(nodes[i]);
+	    }
+	};
+	window['myADS']['walkElementsLinear'] = walkElementsLinear;
+
+	/**
+	 * Walk the nodes in the DOM tree maintaining parent/child relationships.
+	 */
+	function walkTheDOMRecursive(func,node,depth,returnedFromParent) {
+	    var root = node || window.document;
+	    returnedFromParent = func.call(root,depth++,returnedFromParent);
+	    node = root.firstChild;
+	    while(node) {
+	        walkTheDOMRecursive(func,node,depth,returnedFromParent);
+	        node = node.nextSibling;
+	    }
+	};
+	window['myADS']['walkTheDOMRecursive'] = walkTheDOMRecursive;
+
+	/**
+	 * Walk the nodes in the DOM tree maintaining parent/child relationships and include the node attributes as well.
+	 */
+	function walkTheDOMWithAttributes(node,func,depth,returnedFromParent) {
+	    var root = node || window.document;
+	    returnedFromParent = func(root,depth++,returnedFromParent);
+	    if (root.attributes) {
+	        for(var i=0; i < root.attributes.length; i++) {
+	            walkTheDOMWithAttributes(root.attributes[i],func,depth-1,returnedFromParent);
+	        }
+	    }
+	    if(root.nodeType != ADS.node.ATTRIBUTE_NODE) {
+	        node = root.firstChild;
+	        while(node) {
+	            walkTheDOMWithAttributes(node,func,depth,returnedFromParent);
+	            node = node.nextSibling;
+	        }
+	    }
+	};
+	window['myADS']['walkTheDOMWithAttributes'] = walkTheDOMWithAttributes;
+
+	/**
+	 * Walk the DOM recursively using a callback function
+	 */
+	function walkTheDOM(node, func) {
+	    func(node);
+	    node = node.firstChild;
+	    while (node) {
+	         walkTheDOM(node, func);
+	         node = node.nextSibling;
+	    }
+	}
+	window['myADS']['walkTheDOM'] = walkTheDOM;
+
+	/**
+	 * Convert hyphenated word-word strings to camel case wordWord strings.
+	 */
+	function camelize(s) {
+	    return s.replace(/-(\w)/g, function (strMatch, p1){
+	        return p1.toUpperCase();
+	    });
+	}
+	window['myADS']['camelize'] = camelize;
+	
+	/**
+	 * [stopPropagation description] 阻止冒泡
+	 * @param  {[type]} eventObject [description]
+	 * @return {[type]}             [description]
+	 */
+	function stopPropagation(eventObject) {
+		eventObject = eventObject || getEventObject(eventObject);
+		if (eventObject.preventDefault) {
+			eventObject.preventDefault();
+		} else {
+			eventObject.returnValue = false;
+		}
+	}
+	window['myADS']['stopPropagation'] = stopPropagation;
+
+	/**
+	 * Retrieves the element targeted by the event.
+	 */
+	function getTarget(eventObject) {
+	    eventObject = eventObject || getEventObject(eventObject);
+	    // Check if the target is W3C or MSIE
+	    var target = eventObject.target || eventObject.scrElement;
+	    // Reassign the target to the parent
+	    // if it is a text node like in Safari
+	    if(target.nodeType == ADS.node.TEXT_NODE) {
+	        target = node.parentNode;
+	    }
+	    return target;
+
+	}
+	window['ADS']['getTarget'] = getTarget;
+
+	/**
+	 * Get the position of the pointer in the document. 
+	 */
+	function getPointerPositionInDocument(eventObject) {
+	    eventObject = eventObject || getEventObject(eventObject);
+	    var x = eventObject.pageX || (eventObject.clientX +
+	        (document.documentElement.scrollLeft || document.body.scrollLeft));
+	    var y= eventObject.pageY || (eventObject.clientY +
+	        (document.documentElement.scrollTop || document.body.scrollTop));
+	    //x and y now contain the coordinates of the mouse relative to the document origin
+	    return {'x':x,'y':y};
+	}
+	window['ADS']['getPointerPositionInDocument'] = getPointerPositionInDocument;
+
+	/**
+	 * Get the key pressed from the event object 
+	 */
+	function getKeyPressed(eventObject) {
+	    eventObject = eventObject || getEventObject(eventObject);
+	    var code = eventObject.keyCode;
+	    var value = String.fromCharCode(code);
+	    return {'code':code,'value':value};
+	}
+	window['ADS']['getKeyPressed'] = getKeyPressed;
 
 })();

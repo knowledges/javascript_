@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<div id="content">
+		<div id="example" class="testClass">
+			test element
+		</div>
+	</div>
+</body>
+<script src="../js/ADS.js"></script>
+<script>
+
+	function stateChangeListener () {
+		switch(request.status){
+			case 1:
+				// loading。。。
+				break;
+			case 2:
+				//loading oK
+				break;
+			case 3:
+				//push
+				break;
+			case 4:
+				//show
+				if (request.status == 200) {
+					// 对request.responseText
+					// 或request.responseXML进行处理
+				}else{
+					// request.status 中可能包含某一个错误代码
+					// request.statusText中包含错误信息
+				}
+				break;
+		}
+	}
+
+
+
+	var request = false;
+	if (window.XMLHttpRequest) {
+		var request  = new window.XMLHttpRequest();
+	}else if (window.ActiveXObject) {
+		var request = new window.ActiveXObject('Microsoft.XMLHTTP');
+	}
+	if (request) {
+		request.onreadystatechange = stateChangeListener;
+		request.open('GET','http://127.0.0.1/phpmyadmin/#PMAURL-0:index.php?db=&table=&server=1&target=&token=fad4d3a3fb450eddb934a07dcaad44d5',true);
+		request.send(null);
+	};
+
+	// function alertAndDoWhatever (r) {
+	// 	alert(r.responseText);
+	// }
+
+	// request.onreadystatechange = function () {
+	// 	if (request.readyState == 4 && request.status == '200') {
+	// 		alertAndDoWhatever(request);
+	// 	};
+	// }
+
+	// request.open('GET','http://127.0.0.1/phpmyadmin/#PMAURL-0:index.php?db=&table=&server=1&target=&token=fad4d3a3fb450eddb934a07dcaad44d5',true);
+	// request.send(null);
+
+	var xsltProcessor = new XSLTProcessor();
+	var xslStyleSheet;
+	var xmlDoc;
+
+	// 异步获取一个XSL 文件
+	var requestXsl = new XMLHttpRequest();
+	requestXsl.onreadystatechange = function () {
+		xslStyleSheet = request.responseXML;
+	}
+	requestXsl.open('GET','example1.xsl',true);
+	requestXsl.send(null);
+
+	// 异步取得一个XML文件
+	var requestXml = new XMLHttpRequest();
+	requestXml.onreadystatechange = function(){
+		xmlDoc = request.responseXML;
+	}
+	requestXsl.open('GET','example1.xml',true);
+	requestXsl.send(null);
+
+	var  processor = function () {
+		if (xslStyleSheet && xmlDoc) {
+			clearInterval(this);
+			// 通过XSLT转换XML
+			xsltProcessor.importStylesheet(xslStyleSheet);
+			var fragment = xsltProcessor.transformToFragment(xmlDoc,document);
+			ADS.$('example').appendChild(fragment);
+		};
+	}
+	setInterval(processor,200);
+</script>
+</html>

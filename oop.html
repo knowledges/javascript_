@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>面向对象编程</title>
+	<style>
+		.red{
+			color: red;
+		}
+		.green{
+			color: green;
+		}
+	</style>
+</head>
+<body>
+	<h1>
+		对象到底是什么：
+		<h5>“对象”是单个实物的抽象。（万物皆对象）</h5>
+		<h5>“对象”是一个容器，封装了“属性”（property）和“方法”（method）。</h5>
+	</h1>
+	
+	<h1>
+		构造函数：<strong class="red">专门用来生成“对象”的函数</strong>
+		<h4>“面向对象编程”第一步，生成对象</h4>
+		<h3>典型的面像对象编程语言，存在类这个概念。所谓类就是对象的模板，对象就是类的实例。javascript 没有<strong class="red">“类”</strong> 而改用构造函数作为对象的模板</h3>
+		<h3>构造函数的特点：函数内部使用this关键字，代表所生成对象实例。生成对象后，使用new 命令，调用关键字</h3>
+	</h1>
+	
+	<h1>
+		new命令的作用，就是执行构造函数，返回一个实例对象。
+		<h3>如果忘记 new : 构造函数就变成了普通函数，不会生成实例对象 。而 this 就变成了全局函数...</h3>
+	</h1>
+
+	<h1> instanceof 运算符：利用instanceof运算符，还可以巧妙地解决，调用构造函数时，忘了加new命令的问题。 </h1>
+
+	<h1>this 关键字
+
+		<h4>涵义：this 代表函数当前运行环境</h4>
+		<h4>使用场合：1.全局环境  2.构造函数</h4>
+
+		注意点：
+		<h3>避免多层 this </h3>
+		<h3>避免数组中处理方法中的 this </h3>
+		<h3>避免回调函数中的this</h3>
+	</h1>
+	
+	<h1 class="green">apply 
+		<h3>和cell 一样 改变this 的指向 ， 区别：它接收一个数组作为函数执行时的参数。</h3>
+		<h4>找出最大元素  <em class="green">Math.max.apply(null,arr)</em> </h4>
+		<h4>将数组中空元素 变为 undefined  <em class="green">Array.apply(null, arr)</em></h4>
+		<h4>转换类似数组的对象</h4>
+		<h4>绑定回调函数的对象</h4>
+	</h1>
+
+
+</body>
+<script>
+	var Vehicle = function (){
+		// "use strict";
+
+		if (!(this instanceof Vehicle)) {
+			return new Vehicle()
+		}
+		this.price = 100;
+	}
+
+	var Vehicle1 = function () {
+		this.price = 1000;
+		return 2000;
+	}
+
+	var Vehicle2 = function () {
+		this.price = 1000;
+		return {price : 2000};
+	}
+
+	console.log(Vehicle().price);
+</script>
+
+</html>
